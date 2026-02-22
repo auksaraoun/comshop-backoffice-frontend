@@ -12,6 +12,8 @@ export default defineConfig({
     },
   },
   server: {
+    host: '0.0.0.0',  // รับ connection จากทุก interface
+    port: 5173,
     proxy: {
       '/api': {
         target: 'http://localhost:8080/comshop/comshop-backoffice-backend/public'
