@@ -1,4 +1,6 @@
+import api from '@/lib/api'
 import axios from 'axios'
+import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { Spinner } from "@/components/ui/spinner"
@@ -14,31 +16,32 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-
-type FormLogin = {
-    username: string
-    password: string
-}
+import type { LoginCredentials } from '@/types/auth.type'
 
 export function Login() {
     const navigate = useNavigate()
 
-    const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<FormLogin>({
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginCredentials>({
         defaultValues: {
             username: '',
             password: ''
         }
     })
 
-    const onSubmit: SubmitHandler<FormLogin> = (data) => {
-        return axios.post('/api/login', data).then((response) => {
-            if (response.data.success == true) {
-                localStorage.setItem("bearer_token", response.data.token)
-                navigate('/')
+    const onSubmit: SubmitHandler<LoginCredentials> = async (data) => {
+        try {
+            await api.get('/sanctum/csrf-cookie')
+            await api.post('/api/login', data)
+            navigate('/')
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาด',
+                    text: error.response?.data?.message ?? "Internal Server error",
+                })
             }
-        }).catch(() => {
-            setError('root', { message: 'username หรือ password ไม่ถูกต้อง' })
-        })
+        }
     }
 
     return (
