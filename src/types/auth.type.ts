@@ -1,3 +1,5 @@
+import { type Icon } from "@tabler/icons-react"
+
 export interface LoginCredentials {
     username: string
     password: string
@@ -24,4 +26,16 @@ export interface AuthResponse {
     success: boolean
     message: string
     data: Auth
+}
+
+export interface Menu {
+    title: string
+    url: string
+    icon?: Icon
+    subMenus?: SubMenus[]
+}
+
+export interface SubMenus {
+    title: string
+    url: string
 }

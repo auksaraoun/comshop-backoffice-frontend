@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import axios, { type AxiosResponse } from "axios";
 import Swal from "sweetalert2";
 import api from "@/lib/api";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { create } from "zustand"
 import { type AuthResponse, type AuthStore, type Auth } from "@/types/auth.type";
 
@@ -19,6 +19,7 @@ const useAuthStore = create<AuthStore>((set) => ({
 }))
 
 export function AuthProvider() {
+    const navigate = useNavigate()
     useEffect(() => {
         const fetchAuth = async () => {
             try {
@@ -30,6 +31,8 @@ export function AuthProvider() {
                         icon: 'error',
                         title: 'เกิดข้อผิดพลาด',
                         text: error.response?.data?.message ?? "Internal Server error",
+                    }).then(() => {
+                        navigate('/login')
                     })
                 }
             }
