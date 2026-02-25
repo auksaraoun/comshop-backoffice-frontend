@@ -30,7 +30,7 @@ export interface AuthResponse {
 
 export interface Menu {
     title: string
-    url: string
+    url?: string
     icon?: Icon
     subMenus?: SubMenus[]
 }

@@ -1,21 +1,10 @@
-// import { Outlet } from "react-router-dom";
-import { SiteHeader } from "@/components/SiteHeader"
-import { AppSidebar } from "@/components/AppSidebar";
+import { AppSidebar } from "@/components/app-sidebar"
+import { SiteHeader } from "@/components/site-header"
 import {
     SidebarInset,
     SidebarProvider,
-    SidebarTrigger,
 } from "@/components/ui/sidebar"
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-
+import { Outlet } from "react-router-dom"
 
 export function MainLayout() {
     return (
@@ -27,13 +16,14 @@ export function MainLayout() {
                 } as React.CSSProperties
             }
         >
-            <AppSidebar />
+            <AppSidebar variant="inset" />
             <SidebarInset>
                 <SiteHeader />
                 <div className="flex flex-1 flex-col">
-                    <div className="container/main flex flex-1 flex-col gap-2">
+                    <div className="@container/main flex flex-1 flex-col gap-2">
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
                             <div className="px-4 lg:px-6">
+                                <Outlet />
                             </div>
                         </div>
                     </div>

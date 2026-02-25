@@ -3,20 +3,9 @@ import axios, { type AxiosResponse } from "axios";
 import Swal from "sweetalert2";
 import api from "@/lib/api";
 import { Outlet, useNavigate } from "react-router-dom";
-import { create } from "zustand"
-import { type AuthResponse, type AuthStore, type Auth } from "@/types/auth.type";
+import { type AuthResponse } from "@/types/auth.type";
+import useAuthStore from "@/store/useAuthStore";
 
-
-const useAuthStore = create<AuthStore>((set) => ({
-    auth: {
-        name: '',
-        username: '',
-        email: '',
-        created_at: '',
-        updated_at: '',
-    },
-    setAuth: (auth: Auth) => set({ auth }),
-}))
 
 export function AuthProvider() {
     const navigate = useNavigate()
