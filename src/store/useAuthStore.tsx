@@ -1,7 +1,7 @@
 import { create } from "zustand"
-import { type AuthStore, type Auth } from "@/types/auth.type";
+import { type AuthStore, type Auth, type Menu, type MenuStore } from "@/types/auth.type";
 
-const useAuthStore = create<AuthStore>((set) => ({
+export const useAuthStore = create<AuthStore>((set) => ({
     auth: {
         name: '',
         username: '',
@@ -9,7 +9,12 @@ const useAuthStore = create<AuthStore>((set) => ({
         created_at: '',
         updated_at: '',
     },
+    menus: [],
     setAuth: (auth: Auth) => set({ auth }),
+    setMenus: (menus: Menu[]) => set({ menus }),
 }))
 
-export default useAuthStore
+export const useMenuStore = create<MenuStore>((set) => ({
+    menus: [],
+    setMenus: (menus: Menu[]) => set({ menus }),
+}))

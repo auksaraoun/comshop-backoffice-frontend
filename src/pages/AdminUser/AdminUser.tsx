@@ -1,7 +1,9 @@
-export function AdminUser(){
+import { useEffect } from "react"
+
+export function AdminUser() {
     return (
         <>
-            AdminUser
+            <title>AdminUser</title>
         </>
     )
 }

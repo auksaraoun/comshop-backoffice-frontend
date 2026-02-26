@@ -19,7 +19,14 @@ export interface SetAuth {
 
 export interface AuthStore {
     auth: Auth
+    menus: Menu[]
     setAuth: (auth: Auth) => void
+    setMenus: (menus: Menu[]) => void
+}
+
+export interface MenuStore {
+    menus: Menu[]
+    setMenus: (menus: Menu[]) => void
 }
 
 export interface AuthResponse {

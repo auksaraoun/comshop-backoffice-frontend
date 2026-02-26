@@ -1,9 +1,4 @@
 import * as React from "react"
-import {
-  IconUsersGroup,
-  IconDeviceDesktop,
-  IconFileInvoiceFilled
-} from "@tabler/icons-react"
 
 import { SideBarMainMenus } from "./sidebar-main-menus"
 import {
@@ -15,45 +10,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import type { Menu } from "@/types/auth.type"
 import { NavUser } from "./nav-user"
-import useAuthStore from "@/store/useAuthStore";
-
-const menus: Array<Menu> = [
-  {
-    id: 1,
-    title: "Admin Users",
-    url: "/admin-users",
-    icon: IconUsersGroup
-  },
-  {
-    id: 2,
-    title: "Products",
-    icon: IconDeviceDesktop,
-    subMenus: [
-      {
-        id: 3,
-        title: "Types",
-        url: "/product-types",
-      },
-      {
-        id: 4,
-        title: "Stocks",
-        url: "/product-stocks",
-      },
-    ]
-  },
-  {
-    id: 5,
-    title: "Orders",
-    url: "/orders",
-    icon: IconFileInvoiceFilled
-  },
-]
+import { useAuthStore, useMenuStore } from "@/store/useAuthStore";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const auth = useAuthStore((state) => state.auth)
+  const menus = useMenuStore((state) => state.menus)
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
