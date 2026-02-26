@@ -21,27 +21,32 @@ import useAuthStore from "@/store/useAuthStore";
 
 const menus: Array<Menu> = [
   {
+    id: 1,
     title: "Admin Users",
-    url: "admin-users",
+    url: "/admin-users",
     icon: IconUsersGroup
   },
   {
+    id: 2,
     title: "Products",
     icon: IconDeviceDesktop,
     subMenus: [
       {
+        id: 3,
         title: "Types",
-        url: "product-types",
+        url: "/product-types",
       },
       {
+        id: 4,
         title: "Stocks",
-        url: "product-stocks",
+        url: "/product-stocks",
       },
     ]
   },
   {
+    id: 5,
     title: "Orders",
-    url: "orders",
+    url: "/orders",
     icon: IconFileInvoiceFilled
   },
 ]

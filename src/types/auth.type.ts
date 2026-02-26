@@ -29,6 +29,7 @@ export interface AuthResponse {
 }
 
 export interface Menu {
+    id: number
     title: string
     url?: string
     icon?: Icon
@@ -36,6 +37,7 @@ export interface Menu {
 }
 
 export interface SubMenus {
+    id: number
     title: string
     url: string
 }

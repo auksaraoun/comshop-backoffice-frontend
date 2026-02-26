@@ -1,5 +1,3 @@
-"use client"
-
 import {
   IconDotsVertical,
   IconLogout,
@@ -22,9 +20,31 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import type { Auth } from "@/types/auth.type"
+import api from "@/lib/api"
+import axios from "axios"
+import Swal from "sweetalert2"
+import { useNavigate } from "react-router-dom"
 
-export function NavUser({ auth }: { auth: Auth }) {
+export function NavUser({ auth }: { auth: Auth | null }) {
   const { isMobile } = useSidebar()
+  const navigate = useNavigate()
+
+  if (!auth) return null
+
+  const logout = async () => {
+    try {
+      await api.post('/api/logout')
+      navigate('/login')
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: error.response?.data?.message ?? "Internal Server error",
+        })
+      }
+    }
+  }
 
   return (
     <SidebarMenu>
@@ -65,7 +85,7 @@ export function NavUser({ auth }: { auth: Auth }) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={logout} className="cursor-pointer" >
               <IconLogout />
               Log out
             </DropdownMenuItem>

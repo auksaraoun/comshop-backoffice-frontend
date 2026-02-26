@@ -1,4 +1,3 @@
-"use client"
 import {
     Collapsible,
     CollapsibleContent,
@@ -24,9 +23,9 @@ export function SideBarMainMenus({ menus }: { menus: Menu[] }) {
     return (
         <SidebarGroup className="group-data-[collapsible=icon]:hidden">
             <SidebarMenu>
-                {menus.map((item, key) => {
+                {menus.map((item) => {
                     return (
-                        <Fragment key={key} >
+                        <Fragment key={item.id} >
                             {
                                 !item.subMenus || item.subMenus.length == 0
                                     ? (
@@ -45,7 +44,6 @@ export function SideBarMainMenus({ menus }: { menus: Menu[] }) {
                                     )
                                     : (
                                         <Collapsible
-                                            key={key}
                                             asChild
                                             defaultOpen={false}
                                             className="group/collapsible"
@@ -60,12 +58,12 @@ export function SideBarMainMenus({ menus }: { menus: Menu[] }) {
                                                 </CollapsibleTrigger>
                                                 <CollapsibleContent>
                                                     <SidebarMenuSub>
-                                                        {item.subMenus?.map((subMenu, keySubMenu) => (
-                                                            <SidebarMenuSubItem key={`sub_${keySubMenu}`}>
+                                                        {item.subMenus?.map((subMenu) => (
+                                                            <SidebarMenuSubItem key={`sub_${subMenu.id}`}>
                                                                 <SidebarMenuSubButton asChild>
-                                                                    <a href={subMenu.url}>
+                                                                    <Link to={subMenu.url} >
                                                                         <span>{subMenu.title}</span>
-                                                                    </a>
+                                                                    </Link>
                                                                 </SidebarMenuSubButton>
                                                             </SidebarMenuSubItem>
                                                         ))}

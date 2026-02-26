@@ -23,13 +23,21 @@ export function AuthProvider() {
                     }).then(() => {
                         navigate('/login')
                     })
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด',
+                        text: "Internal Server error",
+                    }).then(() => {
+                        navigate('/login')
+                    })
                 }
             }
         }
 
         fetchAuth()
 
-    }, [])
+    }, [navigate])
 
     return (
         <Outlet />
