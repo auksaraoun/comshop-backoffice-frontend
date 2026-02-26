@@ -1,4 +1,5 @@
 import axios, { AxiosError, type AxiosResponse } from 'axios'
+import Swal from 'sweetalert2'
 
 const api = axios.create({
   withCredentials: true,
@@ -12,9 +13,21 @@ const api = axios.create({
 api.interceptors.response.use((
   response: AxiosResponse) => response,
   (error: AxiosError) => {
-    if(error.response?.status == 401){
-      window.location.href = '/login'
+    if (error.response?.status == 401) {
+      Swal.fire({
+        title: 'Session หมดอายุ',
+        text: 'กรุณาเข้าสู่ระบบใหม่อีกครั้ง',
+        icon: 'warning',
+        confirmButtonText: 'ตกลง',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = '/login';
+        }
+      });
     }
-})
+  })
 
 export default api
