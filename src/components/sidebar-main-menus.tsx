@@ -1,23 +1,13 @@
 import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import {
-    IconChevronRight
-} from "@tabler/icons-react"
-import {
     SidebarGroup,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarMenuSub,
-    SidebarMenuSubItem,
-    SidebarMenuSubButton
 } from "@/components/ui/sidebar"
 import { type Menu } from "@/types/auth.type"
-import { Link } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 import { Fragment } from "react"
+import { SideBarGroupMenus } from "./sidebar-group-menus"
 
 export function SideBarMainMenus({ menus }: { menus: Menu[] }) {
     return (
@@ -35,48 +25,19 @@ export function SideBarMainMenus({ menus }: { menus: Menu[] }) {
                                                 className="cursor-pointer"
                                                 asChild
                                             >
-                                                <Link to={item.url ? item.url : ''} >
+                                                <NavLink to={item.url ? item.url : ''} >
                                                     {item.icon && <item.icon />}
                                                     <span>{item.title}</span>
-                                                </Link>
+                                                </NavLink>
                                             </SidebarMenuButton>
                                         </SidebarMenuItem>
                                     )
-                                    : (
-                                        <Collapsible
-                                            asChild
-                                            defaultOpen={false}
-                                            className="group/collapsible"
-                                        >
-                                            <SidebarMenuItem>
-                                                <CollapsibleTrigger asChild>
-                                                    <SidebarMenuButton tooltip={item.title} className="cursor-pointer" >
-                                                        {item.icon && <item.icon />}
-                                                        <span>{item.title}</span>
-                                                        <IconChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                                                    </SidebarMenuButton>
-                                                </CollapsibleTrigger>
-                                                <CollapsibleContent>
-                                                    <SidebarMenuSub>
-                                                        {item.subMenus?.map((subMenu) => (
-                                                            <SidebarMenuSubItem key={`sub_${subMenu.id}`}>
-                                                                <SidebarMenuSubButton asChild>
-                                                                    <Link to={subMenu.url} >
-                                                                        <span>{subMenu.title}</span>
-                                                                    </Link>
-                                                                </SidebarMenuSubButton>
-                                                            </SidebarMenuSubItem>
-                                                        ))}
-                                                    </SidebarMenuSub>
-                                                </CollapsibleContent>
-                                            </SidebarMenuItem>
-                                        </Collapsible>
-                                    )
+                                    : <SideBarGroupMenus menu={item} />
                             }
                         </Fragment>
                     )
                 })}
             </SidebarMenu>
-        </SidebarGroup>
+        </SidebarGroup >
     )
 }
