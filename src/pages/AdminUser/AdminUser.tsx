@@ -36,11 +36,10 @@ export function AdminUser() {
     })
 
     const [params, setParams] = useSearchParams()
+    const [valueSearch, setValueSearch] = useState(params.get('search') || '')
     const perPage = 10
 
     const handleSearch = useDebouncedCallback((value: string) => {
-        console.log(value);
-
         setParams({
             'search': value
         })
@@ -83,7 +82,10 @@ export function AdminUser() {
 
                         <div className="w-full md:max-w-58" >
                             <InputGroup>
-                                <InputGroupInput onChange={(e) => handleSearch(e.target.value)} value={String(params.get('search') || '')} placeholder="Search..." />
+                                <InputGroupInput onChange={(e) => {
+                                    handleSearch(e.target.value)
+                                    setValueSearch(e.target.value)
+                                }} value={valueSearch} placeholder="Search..." />
                                 <InputGroupAddon align="inline-end">
                                     <SearchIcon />
                                 </InputGroupAddon>
