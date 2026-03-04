@@ -19,8 +19,9 @@ import {
 } from "@/components/ui/input-group"
 import { Pagination } from "@/components/Pagination"
 import { Button } from "@/components/ui/button"
-import { IconEdit, IconPlus, IconTrash } from "@tabler/icons-react"
+import { IconEdit, IconTrash } from "@tabler/icons-react"
 import { SearchIcon } from "lucide-react"
+import { AdminUserCreate } from "./AdminUserCreate"
 
 export function AdminUser() {
     const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -45,21 +46,21 @@ export function AdminUser() {
         })
     }, 500)
 
-    useEffect(() => {
-        const fetchAdminUsers = () => {
+    const fetchAdminUsers = () => {
+        const page = params.get('page') || '1'
+        const search = params.get('search') || ''
+        axios.get(`/api/admin-users?per_page=${perPage}&page=${page}&search=${search}`)
+            .then((response: AxiosResponse<AdminUsersData>) => {
+                setAdminUserDatas(response.data)
+                setIsLoading(false)
+            })
+            .catch((error) => {
+                console.log(error);
+                setIsLoading(false)
+            })
+    }
 
-            const page = params.get('page') || '1'
-            const search = params.get('search') || ''
-            axios.get(`/api/admin-users?per_page=${perPage}&page=${page}&search=${search}`)
-                .then((response: AxiosResponse<AdminUsersData>) => {
-                    setAdminUserDatas(response.data)
-                    setIsLoading(false)
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setIsLoading(false)
-                })
-        }
+    useEffect(() => {
         fetchAdminUsers()
     }, [params])
 
@@ -76,9 +77,7 @@ export function AdminUser() {
                     <h2 className="font-bold text-2xl mb-5 px-2" >รายการ Admin Users</h2>
 
                     <div className="flex mb-10 md:mb-5 justify-between flex-wrap gap-y-8" >
-                        <Button variant="secondary" size="sm" className="bg-blue-600 cursor-pointer hover:bg-blue-800 w-full md:max-w-29" >
-                            <IconPlus />Admin User
-                        </Button>
+                        <AdminUserCreate onSuccess={fetchAdminUsers} />
 
                         <div className="w-full md:max-w-58" >
                             <InputGroup>

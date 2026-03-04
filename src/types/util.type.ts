@@ -4,3 +4,10 @@ export interface Meta {
     per_page: number
     total: number
 }
+
+export interface ResponseError {
+    data?: [] | null
+    errors?: Record<string, string[]>
+    message?: string | null
+    success?: boolean
+}

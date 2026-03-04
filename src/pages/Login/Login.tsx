@@ -17,7 +17,6 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import type { LoginCredentials } from '@/types/auth.type'
-import { useEffect } from 'react'
 
 export function Login() {
     const navigate = useNavigate()
