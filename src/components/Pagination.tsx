@@ -15,11 +15,9 @@ import type { SetURLSearchParams } from "react-router-dom"
 export function Pagination({ meta, setParams, params }: { meta: Meta, setParams: SetURLSearchParams, params: URLSearchParams }) {
 
     const changePage = (e: React.MouseEvent<HTMLAnchorElement>, targetPage: number) => {
-        console.log(params);
-
         setParams({
+            ...Object.fromEntries(params),
             'page': String(targetPage),
-            'search': params.get('search') || ''
         })
         e.preventDefault()
     }

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button"
-import { Field, FieldLabel, FieldGroup } from "@/components/ui/field"
+import { Field, FieldLabel, FieldGroup, FieldError } from "@/components/ui/field"
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircleIcon } from 'lucide-react'
 import { Input } from "@/components/ui/input"
@@ -73,7 +73,7 @@ export function Login() {
                                         placeholder="Enter Username"
                                         disabled={isSubmitting}
                                     />
-                                    {errors.username && <div className='text-red-500 text-left text-xs' >*{errors.username?.message}</div>}
+                                    {errors.username && <FieldError errors={[errors.username]} />}
                                 </Field>
                                 <Field>
                                     <FieldLabel htmlFor="fieldgroup-password">Password</FieldLabel>
@@ -85,7 +85,7 @@ export function Login() {
                                         placeholder="Enter Password"
                                         disabled={isSubmitting}
                                     />
-                                    {errors.password && <div className='text-red-500 text-left text-xs' >*{errors.password?.message}</div>}
+                                    {errors.password && <FieldError errors={[errors.password]} />}
                                 </Field>
                             </FieldGroup>
                         </CardContent>

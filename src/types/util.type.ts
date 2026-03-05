@@ -11,3 +11,29 @@ export interface ResponseError {
     message?: string | null
     success?: boolean
 }
+
+export type AlertType = 'success' | 'warning' | 'fail'
+
+export interface AlertOption {
+    open: boolean
+    type: AlertType
+    title: string
+    message: string
+    showCancelButton: boolean
+    confirmButtonText: string
+    cancelButtonText: string
+    onConfirm?: () => void
+    onCancel?: () => void
+}
+
+export interface AlertOptionStore {
+    alertOption: AlertOption
+    setAlertOption: (alertOption: AlertOption) => void
+}
+
+export interface ErrorMessage {
+    exception: string | null
+    file: string | null
+    line: number | null
+    message: string | null
+}

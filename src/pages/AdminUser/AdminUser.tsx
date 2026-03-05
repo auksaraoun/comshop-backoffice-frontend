@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import { useDebouncedCallback } from "use-debounce"
 import { TableSkeleton } from "@/components/skeletons/TableSkeleton"
-import type { AdminUser, AdminUsersData } from "@/types/admn-user.type"
+import type { AdminUser, AdminUsersData } from "@/types/admin-user.type"
 import {
     Table,
     TableBody,
@@ -18,10 +18,11 @@ import {
     InputGroupInput,
 } from "@/components/ui/input-group"
 import { Pagination } from "@/components/Pagination"
-import { Button } from "@/components/ui/button"
-import { IconEdit, IconTrash } from "@tabler/icons-react"
 import { SearchIcon } from "lucide-react"
 import { AdminUserCreate } from "./AdminUserCreate"
+import { AdminUserEdit } from "./AdminUserEdit"
+import { AdminUserDelete } from "./AdminUserDelete"
+import { handleApiError } from "@/utils/utils"
 
 export function AdminUser() {
     const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -37,8 +38,9 @@ export function AdminUser() {
     })
 
     const [params, setParams] = useSearchParams()
+
     const [valueSearch, setValueSearch] = useState(params.get('search') || '')
-    const perPage = 10
+    const perPage = 12
 
     const handleSearch = useDebouncedCallback((value: string) => {
         setParams({
@@ -55,8 +57,8 @@ export function AdminUser() {
                 setIsLoading(false)
             })
             .catch((error) => {
-                console.log(error);
                 setIsLoading(false)
+                handleApiError(error)
             })
     }
 
@@ -106,17 +108,15 @@ export function AdminUser() {
                             <TableBody>
                                 {adminUserDatas.data.map((adminUser, key) => (
                                     <TableRow key={adminUser.id}>
-                                        <TableCell>{((Number(params.get('page') || 1) - 1) * perPage) + (key + 1)}</TableCell>
+                                        <TableCell>{((adminUserDatas.meta.current_page - 1) * perPage) + (key + 1)}</TableCell>
                                         <TableCell>{adminUser.name}</TableCell>
                                         <TableCell>{adminUser.email}</TableCell>
                                         <TableCell>{adminUser.username}</TableCell>
                                         <TableCell className="flex justify-center gap-4">
-                                            <Button variant="secondary" size="sm" className="bg-yellow-500 cursor-pointer hover:bg-yellow-600 px-1" >
-                                                <IconEdit />แก้ไข
-                                            </Button>
-                                            <Button variant="secondary" size="sm" className="bg-red-500 cursor-pointer hover:bg-red-600 px-1" >
-                                                <IconTrash />ลบ
-                                            </Button>
+
+                                            <AdminUserEdit adminUser={adminUser} onSuccess={fetchAdminUsers} />
+                                            <AdminUserDelete adminUser={adminUser} onSuccess={fetchAdminUsers} />
+
                                         </TableCell>
                                     </TableRow>
                                 ))}

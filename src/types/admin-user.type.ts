@@ -31,10 +31,13 @@ export const adminUserSchemaStore = z.object({
 
 export type AdminUserStore = z.infer<typeof adminUserSchemaStore>
 
-// export interface AdminUserStore {
-//     name: string
-//     username: string
-//     email: string
-//     password: string
-//     password_confirmation: string
-// }
+
+export const adminUserSchemaUpdate = z.object({
+    name: z.string().min(1, { message: 'จำเป็นต้องระบุ' }).max(255, { message: "ความยาวชื่อจ้องไม่เกิน 255 ตัวอักษร" }),
+    username: z.string().min(4, { message: "username ความนาวต้องไม่ต่ำกว่า 4 ตัวอักษร" }),
+    email: z.email({ message: 'อีเมล์ไม่ถูกต้อง' })
+        .min(4, { message: "email ความนาวต้องไม่ต่ำกว่า 4 ตัวอักษร" })
+        .max(255, { message: "email ความนาวต้องไม่เกิน 255 ตัวอักษร" }),
+})
+
+export type AdminUserUpdate = z.infer<typeof adminUserSchemaUpdate>

@@ -12,27 +12,31 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-
-import { IconPlus } from "@tabler/icons-react"
+import { IconEdit } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { adminUserSchemaStore, type AdminUserStore } from "@/types/admin-user.type"
+import { adminUserSchemaUpdate, type AdminUser, type AdminUserUpdate } from "@/types/admin-user.type"
 import { Spinner } from '@/components/ui/spinner';
 import { useState } from 'react';
 import type { ResponseError } from '@/types/util.type';
 import { AlertError } from '@/components/AlertError';
-import { toast } from "sonner"
+import { toast } from 'sonner';
 import { handleApiError } from '@/utils/utils';
 
 
-export function AdminUserCreate({ onSuccess }: { onSuccess: () => void }) {
+export function AdminUserEdit({ adminUser, onSuccess }: { adminUser: AdminUser, onSuccess: () => void }) {
     const [serverErrors, setServerErrors] = useState<ResponseError | undefined>()
     const [openDialog, setOpenDialog] = useState<boolean>(false)
 
-    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<AdminUserStore>({
-        resolver: zodResolver(adminUserSchemaStore)
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<AdminUserUpdate>({
+        resolver: zodResolver(adminUserSchemaUpdate),
+        defaultValues: {
+            name: adminUser.name,
+            username: adminUser.username,
+            email: adminUser.email
+        }
     })
 
     const handleCloseDialog = () => {
@@ -46,11 +50,11 @@ export function AdminUserCreate({ onSuccess }: { onSuccess: () => void }) {
         setOpenDialog(true)
     }
 
-    const onSubmit: SubmitHandler<AdminUserStore> = async (data) => {
+    const onSubmit: SubmitHandler<AdminUserUpdate> = async (data) => {
         try {
-            await api.post('/api/admin-users', data)
+            await api.put(`/api/admin-users/${adminUser.id}`, data)
             handleCloseDialog()
-            toast.success("เพิ่มข้อมูล Admin User สำเร็จ", { position: "top-center" })
+            toast.success("แก้ไข Admin Users สำเร็จ!", { position: "top-center" })
             onSuccess()
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status == 422) {
@@ -64,8 +68,8 @@ export function AdminUserCreate({ onSuccess }: { onSuccess: () => void }) {
     return (
         <Dialog open={openDialog} >
             <DialogTrigger asChild>
-                <Button onClick={handleOpenDialog} variant="secondary" size="sm" className="bg-primary cursor-pointer hover:bg-primary/90 w-full md:max-w-29" >
-                    <IconPlus />Admin User
+                <Button onClick={handleOpenDialog} variant="secondary" size="sm" className="bg-warning cursor-pointer hover:bg-warning/90 px-1" >
+                    <IconEdit />แก้ไข
                 </Button>
             </DialogTrigger>
             <DialogContent
@@ -77,10 +81,10 @@ export function AdminUserCreate({ onSuccess }: { onSuccess: () => void }) {
             >
                 <DialogHeader>
                     <DialogTitle className='flex' >
-                        เพิ่ม Admin User
+                        แก้ไข Admin User
                     </DialogTitle>
                     <DialogDescription>
-                        เพิ่ม Admin User คนใหม่เข้าสู่ระบบ
+                        แก้ไข Admin User ในระบบ
                     </DialogDescription>
                 </DialogHeader>
 
@@ -112,28 +116,6 @@ export function AdminUserCreate({ onSuccess }: { onSuccess: () => void }) {
                                 id="email-add"
                             />
                             {errors.email && <FieldError errors={[errors.email]} />}
-                        </Field>
-                        <Field>
-                            <Label className='gap-1' htmlFor="email-add">รหัสผ่าน<div className='text-destructive' >*</div></Label>
-                            <Input
-
-                                {...register("password")}
-                                id="password-add"
-                                type='password'
-                                autoComplete='off'
-                            />
-                            {errors.password && <FieldError errors={[errors.password]} />}
-                        </Field>
-                        <Field>
-                            <Label className='gap-1' htmlFor="email-add">ยืนยันรหัสผ่าน<div className='text-destructive' >*</div></Label>
-                            <Input
-
-                                {...register("password_confirmation")}
-                                id="password-confirmation-add"
-                                type='password'
-                                autoComplete='off'
-                            />
-                            {errors.password_confirmation && <FieldError errors={[errors.password_confirmation]} />}
                         </Field>
                     </FieldGroup>
                     <DialogFooter>
