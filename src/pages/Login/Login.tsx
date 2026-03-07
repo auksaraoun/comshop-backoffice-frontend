@@ -1,6 +1,4 @@
-import api from '@/lib/api'
 import axios from 'axios'
-import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { Spinner } from "@/components/ui/spinner"
@@ -17,6 +15,7 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import type { LoginCredentials } from '@/types/auth.type'
+import Swal from 'sweetalert2'
 
 export function Login() {
     const navigate = useNavigate()
@@ -30,15 +29,21 @@ export function Login() {
 
     const onSubmit: SubmitHandler<LoginCredentials> = async (data) => {
         try {
-            await api.get('/sanctum/csrf-cookie')
-            await api.post('/api/login', data)
+            await axios.get('/sanctum/csrf-cookie')
+            await axios.post('/api/login', data)
             navigate('/')
         } catch (error) {
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && error.status == 401) {
                 Swal.fire({
                     icon: 'error',
                     title: 'เกิดข้อผิดพลาด',
-                    text: error.response?.data?.message ?? "Internal Server error",
+                    text: "ชื่อหรอรัสผ่านไม่ถูกต้อง",
+                })
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาด',
+                    text: "Internal Server error",
                 })
             }
         }
