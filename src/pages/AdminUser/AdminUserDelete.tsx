@@ -16,25 +16,24 @@ import api from "@/lib/api"
 import type { AdminUser } from "@/types/admin-user.type"
 import { handleApiError } from "@/utils/utils"
 import { IconTrash } from "@tabler/icons-react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Trash2Icon } from "lucide-react"
-import { useState } from "react"
 import { toast } from "sonner"
 
-export function AdminUserDelete({ adminUser, onSuccess }: { adminUser: AdminUser, onSuccess: () => void }) {
-    const [isLoading, setIsLoading] = useState(false)
-
-    const handleDelete = async () => {
-        setIsLoading(true)
-        try {
+export function AdminUserDelete({ adminUser }: { adminUser: AdminUser }) {
+    const queryClient = useQueryClient()
+    const { mutate, isPending } = useMutation({
+        mutationFn: async () => {
             await api.delete(`/api/admin-users/${adminUser.id}`)
+        },
+        onSuccess: () => {
             toast.success("ลบข้อมูลสำเร็จ!", { position: "top-center" })
-            setIsLoading(false)
-            onSuccess()
-        } catch (error) {
-            setIsLoading(false)
-            handleApiError(error)
+            queryClient.invalidateQueries({ queryKey: ['AdminUsersTable'] })
+        },
+        onError: (errors) => {
+            handleApiError(errors)
         }
-    }
+    })
 
     return (
         <AlertDialog>
@@ -54,14 +53,14 @@ export function AdminUserDelete({ adminUser, onSuccess }: { adminUser: AdminUser
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isLoading} className="cursor-pointer" variant="outline">ยกเลิก</AlertDialogCancel>
+                    <AlertDialogCancel disabled={isPending} className="cursor-pointer" variant="outline">ยกเลิก</AlertDialogCancel>
                     <AlertDialogAction
-                        disabled={isLoading}
+                        disabled={isPending}
                         className="bg-danger! hover:bg-danger/90! cursor-pointer"
-                        onClick={handleDelete}
+                        onClick={() => mutate()}
                         variant="destructive"
                     >
-                        {isLoading
+                        {isPending
                             ? (
                                 <>
                                     <Spinner />

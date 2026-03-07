@@ -1,6 +1,5 @@
 import api from '@/lib/api'
-import axios from 'axios'
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     Dialog,
@@ -25,13 +24,14 @@ import type { ResponseError } from '@/types/util.type';
 import { AlertError } from '@/components/AlertError';
 import { toast } from "sonner"
 import { handleApiError } from '@/utils/utils';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 
-export function AdminUserCreate({ onSuccess }: { onSuccess: () => void }) {
+export function AdminUserCreate() {
     const [serverErrors, setServerErrors] = useState<ResponseError | undefined>()
     const [openDialog, setOpenDialog] = useState<boolean>(false)
 
-    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<AdminUserStore>({
+    const { register, handleSubmit, reset, formState: { errors } } = useForm<AdminUserStore>({
         resolver: zodResolver(adminUserSchemaStore)
     })
 
@@ -41,25 +41,24 @@ export function AdminUserCreate({ onSuccess }: { onSuccess: () => void }) {
         setServerErrors(undefined)
     }
 
-    const handleOpenDialog = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.currentTarget.blur()  // ✅ เอา focus ออกจากปุ่มก่อน
+    const handleOpenDialog = () => {
         setOpenDialog(true)
     }
 
-    const onSubmit: SubmitHandler<AdminUserStore> = async (data) => {
-        try {
+    const queryClient = useQueryClient()
+    const { mutate, isPending } = useMutation({
+        mutationFn: async (data: AdminUserStore) => {
             await api.post('/api/admin-users', data)
+        },
+        onSuccess: () => {
             handleCloseDialog()
             toast.success("เพิ่มข้อมูล Admin User สำเร็จ", { position: "top-center" })
-            onSuccess()
-        } catch (error) {
-            if (axios.isAxiosError(error) && error.response?.status == 422) {
-                setServerErrors(error.response.data)
-            } else {
-                handleApiError(error)
-            }
+            queryClient.invalidateQueries({ queryKey: ['AdminUsersTable'] })
+        },
+        onError: (errors) => {
+            handleApiError(errors)
         }
-    }
+    })
 
     return (
         <Dialog open={openDialog} >
@@ -86,7 +85,7 @@ export function AdminUserCreate({ onSuccess }: { onSuccess: () => void }) {
 
                 {serverErrors && serverErrors.errors && <AlertError errors={serverErrors.errors} />}
 
-                <form className='grid gap-y-4' onSubmit={handleSubmit(onSubmit)} >
+                <form className='grid gap-y-4' onSubmit={handleSubmit((data) => mutate(data))} >
                     <FieldGroup className='gap-4' >
                         <Field>
                             <Label className='gap-1' htmlFor="name-add">ชื่อ<div className='text-destructive' >*</div></Label>
@@ -138,10 +137,10 @@ export function AdminUserCreate({ onSuccess }: { onSuccess: () => void }) {
                     </FieldGroup>
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button onClick={handleCloseDialog} disabled={isSubmitting} variant="outline">ยกเลิก</Button>
+                            <Button onClick={handleCloseDialog} disabled={isPending} variant="outline">ยกเลิก</Button>
                         </DialogClose>
-                        <Button disabled={isSubmitting} className="cursor-pointer" type="submit">
-                            {isSubmitting
+                        <Button disabled={isPending} className="cursor-pointer" type="submit">
+                            {isPending
                                 ? (
                                     <>
                                         <Spinner />

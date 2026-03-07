@@ -37,3 +37,10 @@ export interface ErrorMessage {
     line: number | null
     message: string | null
 }
+
+export interface ColumnDef {
+    accessorKey: string
+    header: string
+    isSortable: boolean
+    className: string
+}

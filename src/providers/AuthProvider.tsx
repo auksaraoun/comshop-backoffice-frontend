@@ -1,6 +1,4 @@
-import { useEffect } from "react";
-import axios, { type AxiosResponse } from "axios";
-import Swal from "sweetalert2";
+import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import { Outlet, useNavigate } from "react-router-dom";
 import { type AuthResponse } from "@/types/auth.type";
@@ -12,6 +10,8 @@ import {
 } from "@tabler/icons-react"
 
 import type { Menu } from "@/types/auth.type"
+import { handleApiError } from "@/utils/utils";
+import type { AxiosResponse } from "axios";
 
 const menus: Array<Menu> = [
     {
@@ -47,30 +47,20 @@ const menus: Array<Menu> = [
 
 export function AuthProvider() {
     const navigate = useNavigate()
+    const [isLoading, setIsLoading] = useState(true)
+    const [isAuthenthicate, setIsAuthenthicate] = useState(false)
     useEffect(() => {
         const fetchAuth = async () => {
             try {
                 const response: AxiosResponse<AuthResponse> = await api.get('/api/auth')
                 useAuthStore.setState({ auth: response.data.data })
                 useMenuStore.setState({ menus: menus })
+                setIsLoading(false)
+                setIsAuthenthicate(true)
             } catch (error) {
-                if (axios.isAxiosError(error)) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'เกิดข้อผิดพลาด',
-                        text: error.response?.data?.message ?? "Internal Server error",
-                    }).then(() => {
-                        navigate('/login')
-                    })
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'เกิดข้อผิดพลาด',
-                        text: "Internal Server error",
-                    }).then(() => {
-                        navigate('/login')
-                    })
-                }
+                setIsLoading(false)
+                setIsAuthenthicate(false)
+                handleApiError(error)
             }
         }
 
@@ -79,6 +69,9 @@ export function AuthProvider() {
     }, [navigate])
 
     return (
-        <Outlet />
+        <>
+            {!isLoading && !isAuthenthicate && ""}
+            {!isLoading && isAuthenthicate && (<Outlet />)}
+        </>
     )
 }

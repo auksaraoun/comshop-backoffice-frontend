@@ -1,85 +1,105 @@
-import axios, { type AxiosResponse } from "axios"
-import { useEffect, useState } from "react"
+import { type AxiosResponse } from "axios"
+import { useQuery } from "@tanstack/react-query"
+import type { AdminUsersData } from "@/types/admin-user.type"
 import { useSearchParams } from "react-router-dom"
 import { useDebouncedCallback } from "use-debounce"
+import { useEffect, useState } from "react"
 import { TableSkeleton } from "@/components/skeletons/TableSkeleton"
-import type { AdminUser, AdminUsersData } from "@/types/admin-user.type"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import {
-    InputGroup,
-    InputGroupAddon,
-    InputGroupInput,
-} from "@/components/ui/input-group"
-import { Pagination } from "@/components/Pagination"
-import { SearchIcon } from "lucide-react"
-import { AdminUserCreate } from "./AdminUserCreate"
-import { AdminUserEdit } from "./AdminUserEdit"
-import { AdminUserDelete } from "./AdminUserDelete"
 import { handleApiError } from "@/utils/utils"
+import type { ColumnDef } from "@/types/util.type"
+import { AdminUserDataTable } from "./AdminUserDataTable"
+import { Pagination } from "@/components/Pagination"
+import { AdminUserCreate } from "./AdminUserCreate"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
+import { SearchIcon } from "lucide-react"
+import api from "@/lib/api"
 
 export function AdminUser() {
-    const [isLoading, setIsLoading] = useState<boolean>(true)
-    const [adminUserDatas, setAdminUserDatas] = useState<AdminUsersData>({
-        data: [],
-        message: "",
-        meta: {
-            current_page: 0,
-            last_page: 0,
-            per_page: 0,
-            total: 0
-        }
-    })
-
     const [params, setParams] = useSearchParams()
-
     const [valueSearch, setValueSearch] = useState(params.get('search') || '')
-    const perPage = 12
 
+    const page = params.get('page') || '1'
+    const search = params.get('search') || ''
+    const perPage = params.get('per_page') || '12'
+    const sortBy = params.get('sort_by') || 'id'
+    const sortOrder = params.get('sort_order') || 'asc'
     const handleSearch = useDebouncedCallback((value: string) => {
         setParams({
-            'search': value
+            ...Object.fromEntries(params),
+            'search': value,
+            'page': '1'
         })
     }, 500)
 
-    const fetchAdminUsers = () => {
-        const page = params.get('page') || '1'
-        const search = params.get('search') || ''
-        axios.get(`/api/admin-users?per_page=${perPage}&page=${page}&search=${search}`)
-            .then((response: AxiosResponse<AdminUsersData>) => {
-                setAdminUserDatas(response.data)
-                setIsLoading(false)
-            })
-            .catch((error) => {
-                setIsLoading(false)
-                handleApiError(error)
-            })
+    const fetchAdminUsers = async () => {
+        try {
+            const response: AxiosResponse<AdminUsersData> = await api.get(`/api/admin-users?per_page=${perPage}&page=${page}&search=${search}&sort_by=${sortBy}&sort_order=${sortOrder}`)
+            return response.data
+        } catch (error) {
+            handleApiError(error)
+        }
     }
 
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ['AdminUsersTable', page, search, perPage, sortBy, sortOrder],
+        queryFn: () => fetchAdminUsers(),
+        placeholderData: (previousData) => previousData,
+    })
+
     useEffect(() => {
-        fetchAdminUsers()
-    }, [params])
+        setValueSearch(params.get('search') || '')
+        if (data && String(data.meta.current_page) !== page) {
+            setParams(prev => ({
+                ...Object.fromEntries(prev),
+                'page': String(data.meta.current_page),
+            }))
+        }
+    }, [data])
+
+    const columDefs: ColumnDef[] = [
+        {
+            accessorKey: "rowIndex",
+            header: "#",
+            isSortable: false,
+            className: "w-[15%]"
+        },
+        {
+            accessorKey: "name",
+            header: "ชื่อ",
+            isSortable: true,
+            className: "w-[25%]"
+        },
+        {
+            accessorKey: "email",
+            header: "อีเมล์",
+            isSortable: true,
+            className: "w-[20%]"
+        },
+        {
+            accessorKey: "username",
+            header: "Username",
+            isSortable: true,
+            className: "w-[20%]"
+        },
+        {
+            accessorKey: "action",
+            header: "",
+            isSortable: false,
+            className: "w-[20%]"
+        },
+    ]
 
     return (
         <>
-            <title>AdminUser</title>
-
             {isLoading && (
                 <TableSkeleton />
             )}
-
-            {isLoading == false && (
+            {!isLoading && !isError && data && (
                 <>
                     <h2 className="font-bold text-2xl mb-5 px-2" >รายการ Admin Users</h2>
 
                     <div className="flex mb-10 md:mb-5 justify-between flex-wrap gap-y-8" >
-                        <AdminUserCreate onSuccess={fetchAdminUsers} />
+                        <AdminUserCreate />
 
                         <div className="w-full md:max-w-58" >
                             <InputGroup>
@@ -94,42 +114,15 @@ export function AdminUser() {
                         </div>
                     </div>
 
-                    <div className="min-h-132.5"  >
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[15%]">ลำดับ</TableHead>
-                                    <TableHead className="w-[25%]" >ชื่อ</TableHead>
-                                    <TableHead className="w-[20%]" >อีเมล์</TableHead>
-                                    <TableHead className="w-[20%]" >Username</TableHead>
-                                    <TableHead className="w-[20%]" ></TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {adminUserDatas.data.map((adminUser, key) => (
-                                    <TableRow key={adminUser.id}>
-                                        <TableCell>{((adminUserDatas.meta.current_page - 1) * perPage) + (key + 1)}</TableCell>
-                                        <TableCell>{adminUser.name}</TableCell>
-                                        <TableCell>{adminUser.email}</TableCell>
-                                        <TableCell>{adminUser.username}</TableCell>
-                                        <TableCell className="flex justify-center gap-4">
-
-                                            <AdminUserEdit adminUser={adminUser} onSuccess={fetchAdminUsers} />
-                                            <AdminUserDelete adminUser={adminUser} onSuccess={fetchAdminUsers} />
-
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                    <div className="min-h-132.5" >
+                        <AdminUserDataTable columnDefs={columDefs} data={data} />
                     </div>
 
                     <div className="flex justify-end mt-10 md:mt-15" >
-                        <Pagination meta={adminUserDatas.meta} setParams={setParams} params={params} />
+                        <Pagination meta={data.meta} setParams={setParams} params={params} />
                     </div>
                 </>
             )}
-
         </>
     )
 }
