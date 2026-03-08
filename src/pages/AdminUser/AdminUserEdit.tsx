@@ -24,6 +24,7 @@ import { AlertError } from '@/components/AlertError';
 import { toast } from 'sonner';
 import { handleApiError } from '@/utils/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 
 
 export function AdminUserEdit({ adminUser }: { adminUser: AdminUser }) {
@@ -61,7 +62,15 @@ export function AdminUserEdit({ adminUser }: { adminUser: AdminUser }) {
             queryClient.invalidateQueries({ queryKey: ['AdminUsersTable'] })
         },
         onError: (errors) => {
-            handleApiError(errors)
+            if (axios.isAxiosError(errors)) {
+                if (errors.response?.status === 422) {
+                    setServerErrors(errors.response.data)  // ใช้ .data แทน .response
+                } else {
+                    handleApiError(errors)
+                }
+            } else {
+                handleApiError(errors)
+            }
         }
     })
 

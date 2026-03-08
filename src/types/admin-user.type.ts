@@ -41,3 +41,14 @@ export const adminUserSchemaUpdate = z.object({
 })
 
 export type AdminUserUpdate = z.infer<typeof adminUserSchemaUpdate>
+
+
+export const adminUserSchemaUpdatePassword = z.object({
+    password: z.string().min(4, { message: "password ความนาวต้องไม่ต่ำกว่า 4 ตัวอักษร" }),
+    password_confirmation: z.string()
+}).refine(data => data.password === data.password_confirmation, {
+    message: "password ไม่ตรงกัน",
+    path: ["password_confirmation"],  // ← error จะไปโชว์ที่ field นี้
+})
+
+export type AdminUserSchemaUpdatePassword = z.infer<typeof adminUserSchemaUpdatePassword>

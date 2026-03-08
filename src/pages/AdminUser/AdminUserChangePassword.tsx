@@ -11,29 +11,32 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-
-import { IconPlus } from "@tabler/icons-react"
+import { IconKey } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { adminUserSchemaStore, type AdminUserStore } from "@/types/admin-user.type"
+import { adminUserSchemaUpdatePassword, type AdminUser, type AdminUserSchemaUpdatePassword } from "@/types/admin-user.type"
 import { Spinner } from '@/components/ui/spinner';
 import { useState } from 'react';
 import type { ResponseError } from '@/types/util.type';
 import { AlertError } from '@/components/AlertError';
-import { toast } from "sonner"
+import { toast } from 'sonner';
 import { handleApiError } from '@/utils/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
 
-export function AdminUserCreate() {
+export function AdminUserChangePassword({ adminUser }: { adminUser: AdminUser }) {
     const [serverErrors, setServerErrors] = useState<ResponseError | undefined>()
     const [openDialog, setOpenDialog] = useState<boolean>(false)
 
-    const { register, handleSubmit, reset, formState: { errors } } = useForm<AdminUserStore>({
-        resolver: zodResolver(adminUserSchemaStore)
+    const { register, handleSubmit, reset, formState: { errors } } = useForm<AdminUserSchemaUpdatePassword>({
+        resolver: zodResolver(adminUserSchemaUpdatePassword),
+        defaultValues: {
+            password: '',
+            password_confirmation: ''
+        }
     })
 
     const handleCloseDialog = () => {
@@ -42,18 +45,19 @@ export function AdminUserCreate() {
         setServerErrors(undefined)
     }
 
-    const handleOpenDialog = () => {
+    const handleOpenDialog = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.currentTarget.blur()  // ✅ เอา focus ออกจากปุ่มก่อน
         setOpenDialog(true)
     }
 
     const queryClient = useQueryClient()
     const { mutate, isPending } = useMutation({
-        mutationFn: async (data: AdminUserStore) => {
-            await api.post('/api/admin-users', data)
+        mutationFn: async (data: AdminUserSchemaUpdatePassword) => {
+            await api.patch(`/api/admin-users/${adminUser.id}/password`, data)
         },
         onSuccess: () => {
             handleCloseDialog()
-            toast.success("เพิ่มข้อมูล Admin User สำเร็จ", { position: "top-center" })
+            toast.success("แก้ไข Password สำเร็จ!", { position: "top-center" })
             queryClient.invalidateQueries({ queryKey: ['AdminUsersTable'] })
         },
         onError: (errors) => {
@@ -72,8 +76,8 @@ export function AdminUserCreate() {
     return (
         <Dialog open={openDialog} >
             <DialogTrigger asChild>
-                <Button onClick={handleOpenDialog} variant="secondary" size="sm" className="bg-primary cursor-pointer hover:bg-primary/90 w-full md:max-w-29" >
-                    <IconPlus />Admin User
+                <Button onClick={handleOpenDialog} variant="secondary" size="sm" className="bg-destructive cursor-pointer hover:bg-destructive/80 px-1" >
+                    <IconKey />แก้ไข Password
                 </Button>
             </DialogTrigger>
             <DialogContent
@@ -85,10 +89,10 @@ export function AdminUserCreate() {
             >
                 <DialogHeader>
                     <DialogTitle className='flex' >
-                        เพิ่ม Admin User
+                        แก้ไข Admin User Password
                     </DialogTitle>
                     <DialogDescription>
-                        เพิ่ม Admin User คนใหม่เข้าสู่ระบบ
+                        แก้ไข Admin User Password ในระบบ
                     </DialogDescription>
                 </DialogHeader>
 
@@ -97,49 +101,20 @@ export function AdminUserCreate() {
                 <form className='grid gap-y-4' onSubmit={handleSubmit((data) => mutate(data))} >
                     <FieldGroup className='gap-4' >
                         <Field>
-                            <Label className='gap-1' htmlFor="name-add">ชื่อ<div className='text-destructive' >*</div></Label>
+                            <Label className='gap-1' htmlFor="password-reset">Password<div className='text-destructive' >*</div></Label>
                             <Input
-                                {...register("name")}
-                                id="name-add"
-                            />
-                            {errors.name && <FieldError errors={[errors.name]} />}
-                        </Field>
-                        <Field>
-                            <Label className='gap-1' htmlFor="username-add">Username<div className='text-destructive' >*</div></Label>
-                            <Input
-                                {...register("username")}
-                                id="username-add"
-                            />
-                            {errors.username && <FieldError errors={[errors.username]} />}
-                        </Field>
-                        <Field>
-                            <Label className='gap-1' htmlFor="email-add">Email<div className='text-destructive' >*</div></Label>
-                            <Input
-
-                                {...register("email")}
-                                id="email-add"
-                            />
-                            {errors.email && <FieldError errors={[errors.email]} />}
-                        </Field>
-                        <Field>
-                            <Label className='gap-1' htmlFor="email-add">รหัสผ่าน<div className='text-destructive' >*</div></Label>
-                            <Input
-
-                                {...register("password")}
-                                id="password-add"
                                 type='password'
-                                autoComplete='off'
+                                {...register("password")}
+                                id="email-add"
                             />
                             {errors.password && <FieldError errors={[errors.password]} />}
                         </Field>
                         <Field>
-                            <Label className='gap-1' htmlFor="email-add">ยืนยันรหัสผ่าน<div className='text-destructive' >*</div></Label>
+                            <Label className='gap-1' htmlFor="password-confirmation-reset">Password Confirmation<div className='text-destructive' >*</div></Label>
                             <Input
-
-                                {...register("password_confirmation")}
-                                id="password-confirmation-add"
                                 type='password'
-                                autoComplete='off'
+                                {...register("password_confirmation")}
+                                id="email-add"
                             />
                             {errors.password_confirmation && <FieldError errors={[errors.password_confirmation]} />}
                         </Field>

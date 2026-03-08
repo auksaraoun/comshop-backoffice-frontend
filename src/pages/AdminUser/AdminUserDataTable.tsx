@@ -13,6 +13,7 @@ import { AdminUserDelete } from "./AdminUserDelete"
 import type { AdminUsersData } from "@/types/admin-user.type"
 import { cn } from "@/lib/utils"
 import { useSearchParams } from "react-router-dom"
+import { AdminUserChangePassword } from "./AdminUserChangePassword"
 
 export function AdminUserDataTable({ columnDefs, data }: { columnDefs: Array<ColumnDef>, data: AdminUsersData }) {
     const [params, setParams] = useSearchParams()
@@ -63,6 +64,7 @@ export function AdminUserDataTable({ columnDefs, data }: { columnDefs: Array<Col
                         <TableCell>{adminUser.username}</TableCell>
                         <TableCell className="flex justify-center gap-4">
                             <AdminUserEdit adminUser={adminUser} />
+                            <AdminUserChangePassword adminUser={adminUser} />
                             <AdminUserDelete adminUser={adminUser} />
                         </TableCell>
                     </TableRow>
