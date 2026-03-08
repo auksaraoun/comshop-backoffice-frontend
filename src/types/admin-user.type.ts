@@ -17,12 +17,12 @@ export interface AdminUsersData {
 }
 
 export const adminUserSchemaStore = z.object({
-    name: z.string().min(1, { message: 'จำเป็นต้องระบุ' }).max(255, { message: "ความยาวชื่อจ้องไม่เกิน 255 ตัวอักษร" }),
-    username: z.string().min(4, { message: "username ความนาวต้องไม่ต่ำกว่า 4 ตัวอักษร" }),
+    name: z.string().min(1, { message: 'จำเป็นต้องระบุ' }).max(255, { message: "ความยาวชื่อต้องไม่เกิน 255 ตัวอักษร" }),
+    username: z.string().min(4, { message: "username ความยาวต้องไม่ต่ำกว่า 4 ตัวอักษร" }),
     email: z.email({ message: 'อีเมล์ไม่ถูกต้อง' })
-        .min(4, { message: "email ความนาวต้องไม่ต่ำกว่า 4 ตัวอักษร" })
-        .max(255, { message: "email ความนาวต้องไม่เกิน 255 ตัวอักษร" }),
-    password: z.string().min(4, { message: "password ความนาวต้องไม่ต่ำกว่า 4 ตัวอักษร" }),
+        .min(4, { message: "email ความยาวต้องไม่ต่ำกว่า 4 ตัวอักษร" })
+        .max(255, { message: "email ความยาวต้องไม่เกิน 255 ตัวอักษร" }),
+    password: z.string().min(4, { message: "password ความยาวต้องไม่ต่ำกว่า 4 ตัวอักษร" }),
     password_confirmation: z.string()
 }).refine(data => data.password === data.password_confirmation, {
     message: "password ไม่ตรงกัน",
@@ -34,17 +34,17 @@ export type AdminUserStore = z.infer<typeof adminUserSchemaStore>
 
 export const adminUserSchemaUpdate = z.object({
     name: z.string().min(1, { message: 'จำเป็นต้องระบุ' }).max(255, { message: "ความยาวชื่อจ้องไม่เกิน 255 ตัวอักษร" }),
-    username: z.string().min(4, { message: "username ความนาวต้องไม่ต่ำกว่า 4 ตัวอักษร" }),
+    username: z.string().min(4, { message: "username ความยาวต้องไม่ต่ำกว่า 4 ตัวอักษร" }),
     email: z.email({ message: 'อีเมล์ไม่ถูกต้อง' })
-        .min(4, { message: "email ความนาวต้องไม่ต่ำกว่า 4 ตัวอักษร" })
-        .max(255, { message: "email ความนาวต้องไม่เกิน 255 ตัวอักษร" }),
+        .min(4, { message: "email ความยาวต้องไม่ต่ำกว่า 4 ตัวอักษร" })
+        .max(255, { message: "email ความยาวต้องไม่เกิน 255 ตัวอักษร" }),
 })
 
 export type AdminUserUpdate = z.infer<typeof adminUserSchemaUpdate>
 
 
 export const adminUserSchemaUpdatePassword = z.object({
-    password: z.string().min(4, { message: "password ความนาวต้องไม่ต่ำกว่า 4 ตัวอักษร" }),
+    password: z.string().min(4, { message: "password ความยาวต้องไม่ต่ำกว่า 4 ตัวอักษร" }),
     password_confirmation: z.string()
 }).refine(data => data.password === data.password_confirmation, {
     message: "password ไม่ตรงกัน",

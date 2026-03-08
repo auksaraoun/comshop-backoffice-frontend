@@ -48,7 +48,7 @@ const menus: Array<Menu> = [
 export function AuthProvider() {
     const navigate = useNavigate()
     const [isLoading, setIsLoading] = useState(true)
-    const [isAuthenthicate, setIsAuthenthicate] = useState(false)
+    const [isAuthenthicated, setIsAuthenthicated] = useState(false)
     useEffect(() => {
         const fetchAuth = async () => {
             try {
@@ -56,10 +56,10 @@ export function AuthProvider() {
                 useAuthStore.setState({ auth: response.data.data })
                 useMenuStore.setState({ menus: menus })
                 setIsLoading(false)
-                setIsAuthenthicate(true)
+                setIsAuthenthicated(true)
             } catch (error) {
                 setIsLoading(false)
-                setIsAuthenthicate(false)
+                setIsAuthenthicated(false)
                 handleApiError(error)
             }
         }
@@ -70,8 +70,8 @@ export function AuthProvider() {
 
     return (
         <>
-            {!isLoading && !isAuthenthicate && ""}
-            {!isLoading && isAuthenthicate && (<Outlet />)}
+            {!isLoading && !isAuthenthicated && ""}
+            {!isLoading && isAuthenthicated && (<Outlet />)}
         </>
     )
 }
