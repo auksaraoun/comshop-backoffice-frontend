@@ -44,10 +44,17 @@ export function ProductTypeEdit({ productType }: { productType: ProductType }) {
     const handleOpenDialog = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.currentTarget.blur()
         setLoading(true)
-        const response: AxiosResponse<ProductTypeData> = await api.get(`/api/product-types/${productType.id}`)
-        setLoading(false)
-        reset({ name: response.data.data.name })
-        setOpenDialog(true)
+        try {
+            const response: AxiosResponse<ProductTypeData> = await api.get(`/api/product-types/${productType.id}`)
+            setLoading(false)
+            setOpenDialog(true)
+            reset({
+                name: response.data.data.name,
+            })
+        } catch (error) {
+            setLoading(false)
+            handleApiError(error)
+        }
     }
 
     const queryClient = useQueryClient()

@@ -17,6 +17,13 @@ export interface AdminUsersData {
     success: boolean
 }
 
+export interface AdminUserData {
+    data: AdminUser
+    message: string
+    meta: Meta
+    success: boolean
+}
+
 export const adminUserSchemaStore = z.object({
     name: z.string().min(1, { message: 'จำเป็นต้องระบุ' }).max(255, { message: "ความยาวชื่อต้องไม่เกิน 255 ตัวอักษร" }),
     username: z.string().min(4, { message: "username ความยาวต้องไม่ต่ำกว่า 4 ตัวอักษร" }),

@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { adminUserSchemaUpdate, type AdminUser, type AdminUserUpdate } from "@/types/admin-user.type"
+import { adminUserSchemaUpdate, type AdminUser, type AdminUserData, type AdminUserUpdate } from "@/types/admin-user.type"
 import { Spinner } from '@/components/ui/spinner';
 import { useState } from 'react';
 import type { ResponseError } from '@/types/util.type';
@@ -24,12 +24,13 @@ import { AlertError } from '@/components/AlertError';
 import { toast } from 'sonner';
 import { handleApiError } from '@/utils/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import axios, { type AxiosResponse } from 'axios';
 
 
 export function AdminUserEdit({ adminUser }: { adminUser: AdminUser }) {
     const [serverErrors, setServerErrors] = useState<ResponseError | undefined>()
     const [openDialog, setOpenDialog] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(false)
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm<AdminUserUpdate>({
         resolver: zodResolver(adminUserSchemaUpdate),
@@ -46,8 +47,23 @@ export function AdminUserEdit({ adminUser }: { adminUser: AdminUser }) {
         setServerErrors(undefined)
     }
 
-    const handleOpenDialog = () => {
-        setOpenDialog(true)
+    const handleOpenDialog = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.currentTarget.blur()
+        setLoading(true)
+        try {
+            const response: AxiosResponse<AdminUserData> = await api.get(`/api/admin-users/${adminUser.id}`)
+            setLoading(false)
+            setOpenDialog(true)
+            reset({
+                name: response.data.data.name,
+                username: response.data.data.username,
+                email: response.data.data.email
+            })
+        } catch (error) {
+            setLoading(false)
+            handleApiError(error)
+        }
+
     }
 
     const queryClient = useQueryClient()
@@ -76,8 +92,14 @@ export function AdminUserEdit({ adminUser }: { adminUser: AdminUser }) {
     return (
         <Dialog open={openDialog} >
             <DialogTrigger asChild>
-                <Button onClick={handleOpenDialog} variant="secondary" size="sm" className="bg-warning cursor-pointer hover:bg-warning/90 px-1" >
-                    <IconEdit />แก้ไข
+                <Button
+                    disabled={loading}
+                    onClick={handleOpenDialog}
+                    variant="secondary"
+                    size="sm"
+                    className="bg-warning cursor-pointer hover:bg-warning/90 px-1 min-w-[70.1px]"
+                >
+                    {loading ? <Spinner /> : <><IconEdit />แก้ไข</>}
                 </Button>
             </DialogTrigger>
             <DialogContent
@@ -109,14 +131,6 @@ export function AdminUserEdit({ adminUser }: { adminUser: AdminUser }) {
                             {errors.name && <FieldError errors={[errors.name]} />}
                         </Field>
                         <Field>
-                            <Label className='gap-1' htmlFor="username-add">Username<div className='text-destructive' >*</div></Label>
-                            <Input
-                                {...register("username")}
-                                id="username-add"
-                            />
-                            {errors.username && <FieldError errors={[errors.username]} />}
-                        </Field>
-                        <Field>
                             <Label className='gap-1' htmlFor="email-add">Email<div className='text-destructive' >*</div></Label>
                             <Input
 
@@ -124,6 +138,14 @@ export function AdminUserEdit({ adminUser }: { adminUser: AdminUser }) {
                                 id="email-add"
                             />
                             {errors.email && <FieldError errors={[errors.email]} />}
+                        </Field>
+                        <Field>
+                            <Label className='gap-1' htmlFor="username-add">Username<div className='text-destructive' >*</div></Label>
+                            <Input
+                                {...register("username")}
+                                id="username-add"
+                            />
+                            {errors.username && <FieldError errors={[errors.username]} />}
                         </Field>
                     </FieldGroup>
                     <DialogFooter>
