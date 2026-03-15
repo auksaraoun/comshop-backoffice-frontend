@@ -122,7 +122,7 @@ export function AdminUserCreate() {
                             {errors.email && <FieldError errors={[errors.email]} />}
                         </Field>
                         <Field>
-                            <Label className='gap-1' htmlFor="email-add">รหัสผ่าน<div className='text-destructive' >*</div></Label>
+                            <Label className='gap-1' htmlFor="password-add">รหัสผ่าน<div className='text-destructive' >*</div></Label>
                             <Input
 
                                 {...register("password")}
@@ -133,7 +133,7 @@ export function AdminUserCreate() {
                             {errors.password && <FieldError errors={[errors.password]} />}
                         </Field>
                         <Field>
-                            <Label className='gap-1' htmlFor="email-add">ยืนยันรหัสผ่าน<div className='text-destructive' >*</div></Label>
+                            <Label className='gap-1' htmlFor="password-confirmation-add">ยืนยันรหัสผ่าน<div className='text-destructive' >*</div></Label>
                             <Input
 
                                 {...register("password_confirmation")}

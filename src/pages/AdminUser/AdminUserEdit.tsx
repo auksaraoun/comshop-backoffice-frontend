@@ -46,8 +46,7 @@ export function AdminUserEdit({ adminUser }: { adminUser: AdminUser }) {
         setServerErrors(undefined)
     }
 
-    const handleOpenDialog = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.currentTarget.blur()  // ✅ เอา focus ออกจากปุ่มก่อน
+    const handleOpenDialog = () => {
         setOpenDialog(true)
     }
 

@@ -105,7 +105,7 @@ export function AdminUserChangePassword({ adminUser }: { adminUser: AdminUser })
                             <Input
                                 type='password'
                                 {...register("password")}
-                                id="email-add"
+                                id="password-reset"
                             />
                             {errors.password && <FieldError errors={[errors.password]} />}
                         </Field>
@@ -114,7 +114,7 @@ export function AdminUserChangePassword({ adminUser }: { adminUser: AdminUser })
                             <Input
                                 type='password'
                                 {...register("password_confirmation")}
-                                id="email-add"
+                                id="password-confirmation-reset"
                             />
                             {errors.password_confirmation && <FieldError errors={[errors.password_confirmation]} />}
                         </Field>

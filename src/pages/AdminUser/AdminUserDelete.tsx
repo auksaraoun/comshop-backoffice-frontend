@@ -17,7 +17,6 @@ import type { AdminUser } from "@/types/admin-user.type"
 import { handleApiError } from "@/utils/utils"
 import { IconTrash } from "@tabler/icons-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
 import { Trash2Icon } from "lucide-react"
 import { toast } from "sonner"
 
@@ -32,11 +31,7 @@ export function AdminUserDelete({ adminUser }: { adminUser: AdminUser }) {
             queryClient.invalidateQueries({ queryKey: ['AdminUsersTable'] })
         },
         onError: (errors) => {
-            if (axios.isAxiosError(errors)) {
-                handleApiError(errors)
-            } else {
-                handleApiError(errors)
-            }
+            handleApiError(errors)
         }
     })
 

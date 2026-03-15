@@ -44,3 +44,16 @@ export interface ColumnDef {
     isSortable: boolean
     className: string
 }
+
+export interface Meta {
+    currentPage: number
+    lastpage: number
+    total: number
+}
+
+export interface ResponseFetchDatas<TData,> {
+    data: TData[]
+    message: string
+    meta: Meta
+    success: boolean
+}

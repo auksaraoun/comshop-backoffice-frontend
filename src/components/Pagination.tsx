@@ -7,19 +7,17 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination"
+import type { Table } from "@tanstack/react-table"
+
 
 import { PaginationFirst, PaginationLast } from "@/components/ui/pagination-extended"
 import type { Meta } from "@/types/util.type"
-import type { SetURLSearchParams } from "react-router-dom"
 
-export function Pagination({ meta, setParams, params }: { meta: Meta, setParams: SetURLSearchParams, params: URLSearchParams }) {
+export function Pagination<T,>({ meta, table }: { meta: Meta, table: Table<T> }) {
 
     const changePage = (e: React.MouseEvent<HTMLAnchorElement>, targetPage: number) => {
-        setParams({
-            ...Object.fromEntries(params),
-            'page': String(targetPage),
-        })
         e.preventDefault()
+        table.setPageIndex(targetPage - 1)
     }
     return (
         <ThemePagination >

@@ -14,6 +14,7 @@ export interface AdminUsersData {
     data: AdminUser[]
     message: string
     meta: Meta
+    success: boolean
 }
 
 export const adminUserSchemaStore = z.object({
@@ -52,3 +53,12 @@ export const adminUserSchemaUpdatePassword = z.object({
 })
 
 export type AdminUserSchemaUpdatePassword = z.infer<typeof adminUserSchemaUpdatePassword>
+
+export interface FetchAdminUsersParams {
+    [key: string]: unknown
+    perPage: number,
+    page: number,
+    search: string,
+    sortBy: 'id' | 'name' | 'username' | 'email',
+    sortOrder: 'asc' | 'desc',
+}
