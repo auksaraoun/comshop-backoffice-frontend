@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table"
 import type { ColumnDef } from "@/types/util.type"
 import { IconArrowDown, IconArrowsSort, IconArrowUp } from "@tabler/icons-react"
-import type { ProductTypesData } from "@/types/product-type"
+import type { ProductTypesData } from "@/types/product-type.type"
 import { cn } from "@/lib/utils"
 import { useSearchParams } from "react-router-dom"
 import { ProductTypeEdit } from "./ProductTypeEdit"

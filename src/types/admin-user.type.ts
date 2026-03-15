@@ -55,7 +55,6 @@ export const adminUserSchemaUpdatePassword = z.object({
 export type AdminUserSchemaUpdatePassword = z.infer<typeof adminUserSchemaUpdatePassword>
 
 export interface FetchAdminUsersParams {
-    [key: string]: unknown
     perPage: number,
     page: number,
     search: string,

@@ -17,35 +17,36 @@ import { Field, FieldError, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Spinner } from '@/components/ui/spinner';
-import { useState } from 'react';
 import type { ResponseError } from '@/types/util.type';
 import { AlertError } from '@/components/AlertError';
 import { toast } from 'sonner';
 import { handleApiError } from '@/utils/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-import { ProductTypeSchemaUpdate, type ProductType, type ProductTypeUpdate } from '@/types/product-type';
-
+import axios, { type AxiosResponse } from 'axios';
+import { ProductTypeSchemaUpdate, type ProductType, type ProductTypeData, type ProductTypeUpdate } from '@/types/product-type.type';
+import { useState } from 'react';
 
 export function ProductTypeEdit({ productType }: { productType: ProductType }) {
-    const [serverErrors, setServerErrors] = useState<ResponseError | undefined>()
+
     const [openDialog, setOpenDialog] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(false)
+    const [serverErrors, setServerErrors] = useState<ResponseError | undefined>()
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm<ProductTypeUpdate>({
         resolver: zodResolver(ProductTypeSchemaUpdate),
-        defaultValues: {
-            name: productType.name,
-        }
     })
 
     const handleCloseDialog = () => {
         setOpenDialog(false)
-        reset()
         setServerErrors(undefined)
     }
 
-    const handleOpenDialog = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleOpenDialog = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.currentTarget.blur()
+        setLoading(true)
+        const response: AxiosResponse<ProductTypeData> = await api.get(`/api/product-types/${productType.id}`)
+        setLoading(false)
+        reset({ name: response.data.data.name })
         setOpenDialog(true)
     }
 
@@ -73,10 +74,16 @@ export function ProductTypeEdit({ productType }: { productType: ProductType }) {
     })
 
     return (
-        <Dialog open={openDialog} >
+        <Dialog key={`dialog-product-type-${productType.id}`} open={openDialog} >
             <DialogTrigger asChild>
-                <Button onClick={handleOpenDialog} variant="secondary" size="sm" className="bg-warning cursor-pointer hover:bg-warning/90 px-1" >
-                    <IconEdit />แก้ไข
+                <Button
+                    disabled={loading}
+                    onClick={handleOpenDialog}
+                    variant="secondary"
+                    size="sm"
+                    className="bg-warning cursor-pointer hover:bg-warning/90 px-1 min-w-[70.1px]"
+                >
+                    {loading ? <Spinner /> : <><IconEdit />แก้ไข</>}
                 </Button>
             </DialogTrigger>
             <DialogContent
@@ -88,10 +95,10 @@ export function ProductTypeEdit({ productType }: { productType: ProductType }) {
             >
                 <DialogHeader>
                     <DialogTitle className='flex' >
-                        แก้ไข Admin User
+                        แก้ไข Product Type
                     </DialogTitle>
                     <DialogDescription>
-                        แก้ไข Admin User ในระบบ
+                        แก้ไข Product Type ในระบบ
                     </DialogDescription>
                 </DialogHeader>
 

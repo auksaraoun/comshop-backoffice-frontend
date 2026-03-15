@@ -12,6 +12,13 @@ export interface ProductTypesData {
     data: ProductType[]
     message: string
     meta: Meta
+    success: boolean
+}
+
+export interface ProductTypeData {
+    data: ProductType
+    message: string
+    success: boolean
 }
 
 export const productTypeSchemaStore = z.object({
@@ -26,3 +33,11 @@ export const ProductTypeSchemaUpdate = z.object({
 })
 
 export type ProductTypeUpdate = z.infer<typeof ProductTypeSchemaUpdate>
+
+export interface FetchProductTypesParams {
+    perPage: number,
+    page: number,
+    search: string,
+    sortBy: 'id' | 'name' | 'username' | 'email',
+    sortOrder: 'asc' | 'desc',
+}

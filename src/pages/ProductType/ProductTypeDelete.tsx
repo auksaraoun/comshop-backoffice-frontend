@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import api from "@/lib/api"
-import type { ProductType } from "@/types/product-type"
+import type { ProductType } from "@/types/product-type.type"
 import { handleApiError } from "@/utils/utils"
 import { IconTrash } from "@tabler/icons-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
